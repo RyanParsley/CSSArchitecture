@@ -1,0 +1,9 @@
+cssFiles:
+  - style.css
+dest: docs
+out: index.html
+scriptFiles:
+  - https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.9.2/mermaid.min.js
+script:
+  - "mermaid.initialize({startOnLoad:true});"
+
