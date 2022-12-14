@@ -2,6 +2,7 @@ name: CSS Architecture
 class: middle, center, title
 
 # CSS Architecture
+## Talkin' SMACSS
 
 ### Ryan Parsley
 #### January 01, 2023
@@ -10,11 +11,101 @@ class: middle, center, title
 
 Well, here we go again
 
----
+The presentation in which I attempt to articulate a strategy for proper care and
+feeding of CSS. First off, if you haven't read [Jonathan Snook's take](http://smacss.com/book/)
+on the subject, I recommend you still check out the source material. I have it
+linked up at the end.
 
 ---
 
+## What I like about SMACSS
+
+> SMACSS is a way to examine your design process and as a way to fit those rigid
+> frameworks into a flexible thought process
+
+???
+First off, I like the cut of Snook's jib. CSS is a complicated profession and
+Jonathan leans into thought process over tools/libs/implementation details.
+
+
+I like how this system focuses on separating CSS into categories and applies
+patterns in a more targeted fashion. CSS isn't really one thing and Snook does a
+good job explaining this.
+
 ---
-## Further Reading
+
+## Categories
+The ability to separate CSS into easy-to-communicate channels of concern will help drive our CSS architecture decisions. 
+
+* What do I call this?
+* Where should I put this?
+* Should I even be writing this?
+* Where should I look for prior art before I likely introduce duplicate CSS?
+
+---
+
+## Categories
+
+* Base
+* Layout
+* Module
+* State
+* Theme
+
+---
+
+## Base
+
+The base rules are your defaults. This should probably come directly from the
+Design System, and if it doesn't, should be applied globally in the root 
+stylesheet instead of in every component that wants sensible defaults. Wording
+that a different way may make it more self evident "Does it make sense to define
+a _default_ inside view encapsulation?"
+
+---
+
+## Layout
+
+The bulk of style of this category should probably live within a layout component, in our shared styles at the root of the project or a combination of the 2 like the full height panel layout.
+
+---
+
+## Module
+
+This class of style probably makes sense to live in the Style block of a given component, but still should be questioned before simply adding more to the app. Why do you feel you _need_ this CSS. Are you using the right classes and DOM structure? Are you striving for pixel perfection implementation of a mock that is off brand? Did you blindly copy from zeplin? The answer to these questions should guide your hand here.
+
+---
+
+## State
+
+This is the category of CSS that feels most compatible with utility classes. Reusable classes like `.hidden` should probably be seen as bit of a smell considering we're not writing jquery though. Why put something in the DOM and force the browser to parse it just to render it invisible?
+
+---
+
+## Theme
+
+The DS has a light and dark theme, which is one way to interpret this category. Should we lean into responsive design, you can make an argument for that sort of shift being a "mobile theme". For now, we'll mostly assume this category as not our problem. 
+
+---
+
+## What maybe doesn't fit for us
+
+SMACSS was written as a good strategy for plane ol vanilla CSS with no consideration or recommendation for getting tied to frameworks. As such, I think the problem solved with naming may better be solved in our context by location of css. SMACSS based thinking applied to our Angular + DS architecture probably shakes out like this. 
+
+*Base* code should come directly from the DS and be applied globally (`src/styles/`). Keep all this out of component files. Layout components (`modules/layout-*`) and global styles (`src/styles/`) will share the responsibility of *layout* styles. 
+
+*Module* is synonymous with how we see components, but we need to lean into granular components for this to work smoothly. Also, be more aware of how your base styles want to work and be more conservative about overriding that all willie nillie. 
+
+*State* CSS may live in the globally accessible styles (`src/styles`) if it makes sense outside of the context of your component, but is probably largely fine living in your component so long as you've confirmed you're not writing redundant code (this really is the enemy here). 
+
+Let's hold off on *theme* for the time being. 
+
+---
+
+# Resources
 
 * [SMACSS](http://smacss.com/book/)
+* [Notes on layouts identified in Match](https://dev.azure.com/jbhunt/EngAndTech/_wiki/wikis/Applications.wiki/17561/Layouts)
+* [Custom utility class defined in Match](https://dev.azure.com/jbhunt/EngAndTech/_git/app_operationsexecution_load_workflow_ui?path=/src/styles/panel-full-height.scss) (can be improved, but in the right direction)
+* [Example of a layout component](https://dev.azure.com/jbhunt/EngAndTech/_git/app_operationsexecution_load_workflow_ui?path=/src/app/modules/layout/layout-panel/layout-panel.component.ts) (can be improved, but in the right direction)
+
