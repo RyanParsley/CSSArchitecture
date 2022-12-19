@@ -1,10 +1,15 @@
 {
+  "name": "css-architecture",
+  "scripts": {
+    "start": "remarker",
+    "build": "remarker build"
+  },
   "dependencies": {
-    "chokidar": "^3.5.1",
-    "mermaid.cli": "^0.3.1",
-    "remark": "^13.0.0",
+    "chokidar": "^3.5.3",
+    "mermaid.cli": "^0.5.1",
+    "remark": "^14.0.2",
     "remark-mermaid": "^0.2.0",
-    "remarker": "^1.12.1",
-    "to-vfile": "^6.1.0"
+    "remarker": "^1.15.0",
+    "to-vfile": "^7.2.3"
   }
 }
