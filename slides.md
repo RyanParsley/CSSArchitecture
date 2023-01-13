@@ -5,7 +5,7 @@ class: middle, center, title
 ## Talkin' SMACSS
 
 ### Ryan Parsley
-#### January 01, 2023
+#### January 18, 2023
 
 ???
 
