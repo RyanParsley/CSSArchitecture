@@ -9,12 +9,13 @@ class: middle, center, title
 
 ???
 
-Well, here we go again
+In this presentation, I'd like to articulate a strategy for proper care and
+feeding of CSS. 
 
-The presentation in which I attempt to articulate a strategy for proper care and
-feeding of CSS. First off, if you haven't read [Jonathan Snook's take](http://smacss.com/book/)
-on the subject, I recommend you still check out the source material. I have it
-linked up at the end.
+First off, if you haven't read [Jonathan Snook's take](http://smacss.com/book/)
+on the subject, I recommend you still check out the source material.
+
+I have it linked up at the end.
 
 ---
 
@@ -25,8 +26,10 @@ linked up at the end.
 
 ???
 
-First off, I like the cut of Snook's jib. CSS is a complicated profession and
-Jonathan leans into thought process over tools/libs/implementation details.
+I'll start by saying: I like the cut of Snook's jib. 
+
+CSS is a complicated profession and Jonathan leans into thought process over
+tools/libs/implementation details.
 
 
 I like how this system focuses on separating CSS into categories and applies
@@ -44,9 +47,10 @@ good job explaining this.
 
 ???
 
+Naming things is hard... and so is sorting things.
+
 The ability to separate CSS into easy-to-communicate channels of concern will 
 help drive our CSS architecture decisions. 
-
 
 ---
 
@@ -131,7 +135,7 @@ body * {
 
 ```
 
-??? 
+???
 
 This is probably more how yours should look though
 
@@ -177,6 +181,9 @@ of laying out how various components (modules) come together.
 You can see what he's going for here, the app/ page has one header and footer
 and this is the level at which we think about establishing how they render.
 
+The fact that snook has IDs for header and article feels a touch dated, but the
+general idea holds and those are pretty good names to drive the point.
+
 ---
 
 ## Layout
@@ -215,6 +222,13 @@ The bulk of style of this category should probably live within a layout
 component, in our shared styles at the root of the project or a combination of
 the 2 like the full height panel layout.
 
+I don't want to dig too deep into component composition, but it's worth
+mentioning that a sensible component strategy can greatly simplify your CSS
+strategy. Really challenge how you interpret "separation of concerns".
+
+Are you separating in a way that makes your life easier or just making files
+smaller?
+
 ---
 
 ## Module
@@ -225,7 +239,79 @@ the 2 like the full height panel layout.
 
 ???
 
-This class of style probably makes sense to live in the Style block of a given component, but still should be questioned before simply adding more to the app. Why do you feel you _need_ this CSS. Are you using the right classes and DOM structure? Are you striving for pixel perfection implementation of a mock that is off brand? Did you blindly copy from zeplin? The answer to these questions should guide your hand here.
+This class of style probably makes sense to live in the context of a given
+component. Do be critical when considering a component _should_ be customized.
+
+Why do you feel you _need_ this CSS? 
+
+Are you using the right classes and DOM structure? 
+
+Are you striving for pixel perfection implementation of a mock that is off brand?
+
+Did you blindly copy from zeplin? 
+
+The answer to these questions should guide your hand here.
+
+---
+
+## Module (example from SMACSS)
+
+```scss
+.module > h2 {
+    padding: 5px;
+}
+
+.module span {
+    padding: 5px;
+}
+```
+
+???
+
+See how in the book, Snook is using the name of a module to namespace the
+styling? If you're writing styles in a component context, view encapsulation
+will take care of that for you without a need to come up with clever names. 
+
+---
+## Module
+
+```scss
+  selector: 'app-card',
+  template: `
+    <h2>{{ title }}</h2>
+    <ng-content></ng-content>
+  `,
+  styles: [`
+    @import 'variables';
+
+    :host {
+      border: solid $border-thickness $red;
+      display: block;
+      border-radius: $radius;
+      padding: $gap;
+      background-color: $brown-light-1;
+    }
+
+    h2 {
+      background: $whitish;
+      border: solid $border-thickness $grey;
+      padding: $gap;
+      border-radius: 0 $radius $radius 0;
+      box-shadow: $outer-shadow;
+    }
+  `]
+```
+
+???
+
+:host is your friend. You've already declared a selector, You don't need to wrap
+a div just to decorate it with something like .card .content or the like. If you
+want to have something akin to a module without the component implication, you
+could bundle such a thing up as global styles.
+
+Considering how such styling tends to be coupled with the "right" markup to
+work... you probably mostly want to leverage a small presenter component to 
+assure a convenient amount of coupling.
 
 ---
 
@@ -247,11 +333,11 @@ Reusable classes like `.is-hidden` should probably be seen as bit of a smell
 considering we're not writing jquery though. Why put something in the DOM and
 force the browser to parse it just to render it invisible?
 
-If you can keep this abstract, you should and create a utility class or
-placeholder at the root of the project. When you're working with a state
-modifier that only makes sense applied to a given module, define it scoped as
-such. Do so either through naming convention `is-tab-active` or through a
-component's view encapsulation. 
+If you can keep this abstract, you should and creating a utility class or
+placeholder at the root of the project makes sense. When you're working with a
+state modifier that only makes sense applied to a given module, define it scoped
+as such. Do so either through naming convention `is-tab-active` or through a
+component's view encapsulation `is-active`. 
 
 ---
 
@@ -291,19 +377,33 @@ typography for.
 ## What maybe doesn't fit for us
 
 * But we use scss
-* `src/styles.scss` has no view encapsulation
 * View encapsulation lower the stakes of name-spacing
 * You shouldn't be writing a lot of base or theme styles as a rule
 
 ???
 
-SMACSS was written as a good strategy for plane ol vanilla CSS with no consideration or recommendation for getting tied to frameworks. As such, I think the problem solved with naming may better be solved in our context by location of css. SMACSS based thinking applied to our Angular + DS architecture probably shakes out like this. 
+SMACSS was written as a good strategy for plane ol vanilla CSS with no
+consideration or recommendation for getting tied to frameworks. As such, I think
+the problem solved with naming may better be solved in our context by location
+of css. SMACSS based thinking applied to our Angular + DS architecture probably
+shakes out like this. 
 
-*Base* code should come directly from the DS and be applied globally (`src/styles/`). Keep all this out of component files. Layout components (`modules/layout-*`) and global styles (`src/styles/`) will share the responsibility of *layout* styles. 
+*Base* code should come directly from the DS and be applied globally
+(`src/styles/`). Keep all this out of component files. 
 
-*Module* is synonymous with how we see components, but we need to lean into granular components for this to work smoothly. Also, be more aware of how your base styles want to work and be more conservative about overriding that all willie nillie. 
+Layout components (`modules/layout-*`)
 
-*State* CSS may live in the globally accessible styles (`src/styles`) if it makes sense outside of the context of your component, but is probably largely fine living in your component so long as you've confirmed you're not writing redundant code (this really is the enemy here). 
+global styles (`src/styles/`) will share the responsibility of *layout* styles. 
+
+*Module* is synonymous with how we see components, but we need to lean into
+granular components for this to work smoothly. Also, be more aware of how your
+base styles want to work and be more conservative about overriding that all
+willie nillie. 
+
+*State* CSS may live in the globally accessible styles (`src/styles`) if it
+makes sense outside of the context of your component, but is probably largely
+fine living in your component so long as you've confirmed you're not writing
+redundant code (this really is the enemy here). 
 
 Let's hold off on *theme* for the time being. 
 
@@ -355,4 +455,5 @@ media query because it's only applicable for bigger screens.
 * [Notes on layouts identified in Match](https://dev.azure.com/jbhunt/EngAndTech/_wiki/wikis/Applications.wiki/17561/Layouts)
 * [Custom utility class defined in Match](https://dev.azure.com/jbhunt/EngAndTech/_git/app_operationsexecution_load_workflow_ui?path=/src/styles/panel-full-height.scss) (can be improved, but in the right direction)
 * [Example of a layout component](https://dev.azure.com/jbhunt/EngAndTech/_git/app_operationsexecution_load_workflow_ui?path=/src/app/modules/layout/layout-panel/layout-panel.component.ts) (can be improved, but in the right direction)
+
 
